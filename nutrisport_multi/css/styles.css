@@ -1,0 +1,30 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*{font-family:Inter,system-ui,sans-serif;box-sizing:border-box}
+:root{--bg:#070a07;--card:#111d11;--card2:#0f1a0f;--border:#1a2e1a;--green:#22c55e;--green2:#4ade80;--green3:#16a34a}
+body{background:radial-gradient(1200px at 20% -10%, rgba(34,197,94,.18), transparent), radial-gradient(1000px at 80% 0%, rgba(74,222,128,.12), transparent), var(--bg); color:#e5e7eb; min-height:100vh; padding-bottom:96px; overflow-x:hidden}
+.header{position:sticky;top:0;z-index:30;background:rgba(7,10,7,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;letter-spacing:-.8px;display:flex;gap:10px;align-items:center} .logo-mark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(34,197,94,.35)}
+.card{background:linear-gradient(180deg, rgba(17,29,17,.9), rgba(15,26,15,.9));border:1px solid var(--border);border-radius:22px;padding:18px;margin:12px;box-shadow:0 10px 30px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04);animation:fadeIn .4s ease}
+.card-title{font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.7px;font-weight:800;margin-bottom:12px}
+.btn{background:linear-gradient(135deg,var(--green),var(--green3));color:#000;border:none;padding:13px 18px;border-radius:14px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 8px 20px rgba(34,197,94,.3)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(34,197,94,.4)} .btn:disabled{opacity:.35;transform:none}
+.btn-ghost{background:rgba(15,26,15,.8);border:1px solid var(--border);color:#e5e7eb;backdrop-filter:blur(8px)}
+.progress{height:8px;background:#1a2e1a;border-radius:20px;overflow:hidden} .progress-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:20px;transition:width .6s ease}
+.stat{background:linear-gradient(180deg, #0f1a0f, #0d150d);border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;transition:.2s} .stat:hover{border-color:rgba(34,197,94,.3);transform:translateY(-2px)}
+.stat b{font-size:22px;color:#fff;display:block} .stat span{font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:.6px}
+.logro{border:1px solid var(--border);border-radius:18px;padding:14px;text-align:center;background:linear-gradient(180deg,#0f1a0f,#0d150d);min-height:120px;display:flex;flex-direction:column;justify-content:center;transition:.3s}
+.logro.on{border-color:rgba(34,197,94,.5);background:linear-gradient(180deg, rgba(34,197,94,.14), #0f1a0f);box-shadow:0 8px 24px rgba(34,197,94,.15)}
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(15,20,16,.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 22px;z-index:40;overflow-x:auto}
+.nav button{background:none;border:none;color:#6b7280;font-size:9.5px;font-weight:700;min-width:56px;padding:6px 8px;border-radius:12px;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.nav button.active{color:#4ade80;background:rgba(34,197,94,.14)}
+.nav button i{font-size:18px;font-style:normal}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#111d11;border:1px solid var(--border);padding:12px 18px;border-radius:14px;display:none;z-index:100;font-size:12px;box-shadow:0 20px 40px rgba(0,0,0,.5)}
+input,select,textarea{width:100%;padding:13px;border-radius:14px;background:rgba(15,26,15,.9);border:1px solid var(--border);color:#fff;outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.shimmer{background:linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);background-size:200% 100%;animation:shimmer 2s infinite}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.food-card{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg, #0f1a0f, #0d150d);padding:12px 14px;border-radius:14px;border:1px solid var(--border);margin:8px 0;transition:.2s}
+.food-card:hover{border-color:rgba(34,197,94,.25);transform:translateX(2px)}
