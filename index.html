@@ -3,174 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>NutriTrack V2 - Completa</title>
+<title>NutriSport - Transforma tu cuerpo</title>
+<meta name="application-name" content="NutriSport">
+<meta name="apple-mobile-web-app-title" content="NutriSport">
+<meta property="og:title" content="NutriSport">
+<meta property="og:site_name" content="NutriSport">
+<meta name="description" content="NutriSport - Registra alimentos, rutinas, racha, logros y progreso. La app fitness más dinámica.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2322c55e'/><text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-size='50'>🔥</text></svg>">
-<style>
-*{margin:0;padding:0;box-sizing:border-box} body{background:#0a0f0a;color:#e5e7eb;font-family:Inter,system-ui,sans-serif;padding-bottom:92px;-webkit-font-smoothing:antialiased}
-.header{position:sticky;top:0;z-index:20;background:rgba(10,15,10,.95);backdrop-filter:blur(12px);border-bottom:1px solid #1a2e1a;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:900;color:#fff;display:flex;gap:8px;align-items:center;font-size:14px} .logo-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#22c55e,#4ade80);display:flex;align-items:center;justify-content:center}
-.card{background:#111d11;border:1px solid #1a2e1a;border-radius:20px;padding:16px;margin:10px 12px}
-.card-title{font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px}
-.btn{background:#22c55e;color:#000;border:none;padding:12px 16px;border-radius:12px;font-weight:800;cursor:pointer}
-.btn:disabled{opacity:.35} .btn-ghost{background:#0f1a0f;border:1px solid #1a2e1a;color:#e5e7eb}
-.progress{height:6px;background:#1a2e1a;border-radius:10px;overflow:hidden} .progress-bar{height:100%;background:#22c55e}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.stat{background:#0f1a0f;border:1px solid #1a2e1a;border-radius:14px;padding:14px;text-align:center}
-.stat b{font-size:20px;color:#fff;display:block} .stat span{font-size:10px;color:#9ca3af;text-transform:uppercase}
-.logro{border:1px solid #1a2e1a;border-radius:16px;padding:12px;text-align:center;background:#0f1a0f;min-height:110px;display:flex;flex-direction:column;justify-content:center}
-.logro.on{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.1)}
-.nav{position:fixed;bottom:0;left:0;right:0;background:#0f1410f2;backdrop-filter:blur(12px);border-top:1px solid #1a2e1a;display:flex;justify-content:space-around;padding:8px 0 20px;z-index:30;overflow-x:auto;gap:2px}
-.nav button{background:none;border:none;color:#6b7280;font-size:9px;font-weight:600;min-width:52px;padding:4px 6px;border-radius:8px}
-.nav button.active{color:#4ade80;background:rgba(34,197,94,.12)}
-.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111d11;border:1px solid #1a2e1a;padding:10px 16px;border-radius:12px;display:none;z-index:100;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-input,select,textarea{width:100%;padding:12px;border-radius:12px;background:#0f1a0f;border:1px solid #1a2e1a;color:#fff;outline:none;margin-top:6px}
-input:focus,select:focus{border-color:#22c55e}
-</style>
+<link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-<div class="header"><div class="logo"><div class="logo-mark">🔥</div>NUTRITRACK V2</div><div id="hdr" style="font-size:11px;color:#9ca3af"></div></div>
+<div class="header"><div class="logo"><div class="logo-mark">🔥</div>NUTRISPORT</div><div id="hdr" style="font-size:11px;color:#9ca3af"></div></div>
 <div id="toast" class="toast"></div>
 <div id="app"></div>
 <div class="nav" id="nav"></div>
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-const firebaseConfig={apiKey:"AIzaSyDL6sVxhq6RqzjhaZyhneGMURQeSGCLxKQ",authDomain:"nutritrack-v2-ab92f.firebaseapp.com",projectId:"nutritrack-v2-ab92f",storageBucket:"nutritrack-v2-ab92f.firebasestorage.app",messagingSenderId:"203433318539",appId:"1:203433318539:web:89d8e0e3d2222991829c8e"};
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-const premium=['luisangelesquerra@gmail.com','luiskah77@gmail.com'];
-
-let user=null, data=null, page='dashboard', perfilEdit={}, hasPending=false;
-
-const ALIMENTOS_DB=[
-{id:1,nombre:'Pollo pechuga 100g',cal:165,prot:31,carb:0,grasa:3.6},
-{id:2,nombre:'Arroz blanco 100g',cal:130,prot:2.4,carb:28,grasa:0.3},
-{id:3,nombre:'Huevo entero',cal:68,prot:5.5,carb:0.5,grasa:4.7},
-{id:4,nombre:'Avena 50g',cal:194,prot:8,carb:33,grasa:3.4},
-{id:5,nombre:'Atún en agua 100g',cal:144,prot:30,carb:0,grasa:1},
-{id:6,nombre:'Plátano',cal:89,prot:1.1,carb:23,grasa:0.3},
-{id:7,nombre:'Brócoli 100g',cal:34,prot:2.8,carb:7,grasa:0.4},
-{id:8,nombre:'Leche entera 250ml',cal:150,prot:8,carb:12,grasa:8},
-];
-const RUTINAS_DB=[
-{id:'e1',nombre:'Sentadilla',categoria:'Piernas',met:6},
-{id:'e2',nombre:'Press banca',categoria:'Pecho',met:5},
-{id:'e3',nombre:'Dominadas',categoria:'Espalda',met:7},
-{id:'e4',nombre:'Plancha',categoria:'Core',met:4},
-{id:'e5',nombre:'Burpees',categoria:'Cardio',met:8},
-{id:'e6',nombre:'Peso muerto',categoria:'Piernas',met:6},
-{id:'e7',nombre:'Flexiones',categoria:'Pecho',met:5},
-];
-const LOGROS=[
-{id:'primer', n:'Primer Paso', d:'Primera comida', icon:'🌱', tipo:'comidas', req:1, xp:10},
-{id:'llamas', n:'Racha 3', d:'3 días seguidos', icon:'🔥', tipo:'racha', req:3, xp:50},
-{id:'const', n:'Constancia', d:'5 rutinas', icon:'💪', tipo:'rutinas', req:5, xp:75},
-{id:'nutri', n:'Nutrición', d:'20 alimentos', icon:'🍎', tipo:'comidas', req:20, xp:75},
-{id:'puntual', n:'Puntual', d:'7 días', icon:'⏰', tipo:'racha', req:7, xp:100},
-{id:'nivel5', n:'Nivel 5', d:'Alcanza nivel 5', icon:'🏆', tipo:'nivel', req:5, xp:200},
-{id:'leyenda', n:'Leyenda', d:'30 días', icon:'👑', tipo:'racha', req:30, xp:500},
-{id:'perf', n:'Enfoque', d:'10 objetivos', icon:'🎯', tipo:'objetivo', req:10, xp:150},
-];
-
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2500)}
-async function load(uid){
- try{
-  const s=await getDoc(doc(db,'users',uid));
-  if(s.exists()) data=s.data();
-  else data={email:user.email,xp:0,nivel:1,racha:0,rachaHistorial:[],comidas:0,rutinas:0,objetivos:0,logros:[],cont:{fecha:'',comidasHoy:0,rutinasHoy:0,objHoy:0}, alimentos:[], ejercicios:[], perfil:{peso:'',altura:'',objetivo:'volumen',nombre:''}, photoURL:''};
-  if(!data.rachaHistorial) data.rachaHistorial=[];
-  if(!data.logros) data.logros=[];
-  if(!data.cont) data.cont={fecha:'',comidasHoy:0,rutinasHoy:0,objHoy:0};
-  if(!data.alimentos) data.alimentos=[];
-  if(!data.ejercicios) data.ejercicios=[];
-  if(!data.perfil) data.perfil={peso:'',altura:'',objetivo:'volumen',nombre:''};
-  if(data.xp===undefined) data.xp=0;
-  if(!data.nivel) data.nivel=1;
-  perfilEdit={...data.perfil};
-  localStorage.setItem('ns_'+uid, JSON.stringify(data));
- }catch(e){const l=localStorage.getItem('ns_'+uid); if(l) data=JSON.parse(l);}
-}
-async function save(){ if(!user) return; try{await setDoc(doc(db,'users',user.uid),{...data,updatedAt:serverTimestamp()},{merge:true}); localStorage.setItem('ns_'+user.uid, JSON.stringify(data));}catch(e){}}
-
-function hoyStr(){return new Date().toISOString().split('T')[0];}
-function checkDia(){const h=hoyStr(); if(data.cont.fecha!==h) data.cont={fecha:h,comidasHoy:0,rutinasHoy:0,objHoy:0}; return h;}
-function addXP(c,tipo){const h=checkDia(); if(tipo==='comida'&&data.cont.comidasHoy>=3) return; if(tipo==='rutina'&&data.cont.rutinasHoy>=1) return; if(tipo==='obj'&&data.cont.objHoy>=1) return; data.xp+=c; if(tipo==='comida') data.cont.comidasHoy++; if(tipo==='rutina') data.cont.rutinasHoy++; if(tipo==='obj') data.cont.objHoy++; const nn=Math.floor(data.xp/300)+1; if(nn>data.nivel){data.nivel=nn; toast(`Nivel ${nn}`);} save(); checkLogros();}
-function checkLogros(){ LOGROS.forEach(l=>{ if(data.logros.find(x=>x.id===l.id)) return; let ok=false; if(l.tipo==='comidas'&&data.comidas>=l.req) ok=true; if(l.tipo==='rutinas'&&data.rutinas>=l.req) ok=true; if(l.tipo==='racha'&&data.racha>=l.req) ok=true; if(l.tipo==='nivel'&&data.nivel>=l.req) ok=true; if(l.tipo==='objetivo'&&data.objetivos>=l.req) ok=true; if(ok){data.logros.push({id:l.id,fecha:new Date().toISOString()}); data.xp+=l.xp; toast(`${l.icon} ${l.n}`); save();}}); }
-function sumarDia(){ const h=checkDia(); if(data.rachaHistorial.includes(h)){toast('Ya registrado hoy'); return;} const ayer=new Date(); ayer.setDate(ayer.getDate()-1); const aStr=ayer.toISOString().split('T')[0]; const ult=data.rachaHistorial[data.rachaHistorial.length-1]; if(data.rachaHistorial.length>0 && ult!==aStr){ data.rachaHistorial=[h]; data.racha=1; } else { data.rachaHistorial.push(h); data.racha=data.rachaHistorial.length; addXP(15,'racha'); } save(); render(); toast('Día registrado'); }
-function quitarDia(){ const h=checkDia(); if(!data.rachaHistorial.includes(h) || data.rachaHistorial[data.rachaHistorial.length-1]!==h){ toast('Nada que deshacer'); return;} data.rachaHistorial.pop(); data.racha=data.rachaHistorial.length; save(); render(); toast('Deshecho'); }
-
-function render(){
- const a=document.getElementById('app');
- const isPrem=user && premium.includes(user.email);
- if(!user){
-  a.innerHTML=`<div class="card" style="max-width:380px;margin:40px auto"><div style="font-size:32px;text-align:center">🔥</div><h3 style="text-align:center;margin:12px 0">Bienvenido a NutriTrack</h3><input id="em" placeholder="Correo"><input id="pw" type="password" placeholder="Contraseña" style="margin-top:10px"><button class="btn" style="width:100%;margin-top:12px" onclick="window.login()">Continuar</button><button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="window.resetPass()">¿Olvidaste tu contraseña?</button></div>`;
-  document.getElementById('nav').innerHTML=''; document.getElementById('hdr').textContent=''; return;
- }
- document.getElementById('hdr').textContent=`Nv ${data.nivel} • ${data.xp} XP • 🔥${data.racha}`;
- document.getElementById('nav').innerHTML=`
-  <button class="${page==='dashboard'?'active':''}" onclick="window.go('dashboard')">Inicio</button>
-  <button class="${page==='alimentos'?'active':''}" onclick="window.go('alimentos')">Alimentos</button>
-  <button class="${page==='rutinas'?'active':''}" onclick="window.go('rutinas')">Rutinas</button>
-  <button class="${page==='stats'?'active':''}" onclick="window.go('stats')">Stats</button>
-  <button class="${page==='logros'?'active':''}" onclick="window.go('logros')">Logros</button>
-  <button class="${page==='perfil'?'active':''}" onclick="window.go('perfil')">Perfil</button>
- `;
- if(page==='dashboard'){
-  const h=hoyStr(); const ya=data.rachaHistorial.includes(h); const prog=data.xp%300;
-  const totalCal=data.alimentos.reduce((s,x)=>s+x.cal,0);
-  a.innerHTML=`
-   <div class="card"><div style="display:flex;justify-content:space-between"><div><div style="font-size:18px;font-weight:800">Hola, ${data.perfil.nombre||user.email.split('@')[0]}</div><div style="font-size:12px;color:#9ca3af">Nivel ${data.nivel} • ${data.xp} XP</div></div><div style="width:44px;height:44px;border-radius:12px;background:#0f1a0f;border:1px solid #1a2e1a;display:flex;align-items:center;justify-content:center">🔥</div></div><div style="margin-top:14px"><div class="progress"><div class="progress-bar" style="width:${(prog/300)*100}%"></div></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#6b7280;margin-top:4px"><span>${prog}/300 XP</span><span>Siguiente nivel</span></div></div></div>
-   <div class="card"><div class="card-title">Racha</div><div class="grid2"><div class="stat"><b>${data.racha}</b><span>Días</span></div><div class="stat"><b>${data.logros.length}</b><span>Logros</span></div></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" onclick="window.sumarDia()" ${ya?'disabled':''}>${ya?'Registrado hoy':'Registrar día'}</button><button class="btn btn-ghost" style="width:110px" onclick="window.quitarDia()" ${!ya?'disabled':''}>Deshacer</button></div></div>
-   <div class="card"><div class="card-title">Resumen hoy</div><div class="grid2"><div class="stat"><b>${totalCal}</b><span>Calorías</span></div><div class="stat"><b>${data.alimentos.length}</b><span>Alimentos</span></div><div class="stat"><b>${data.ejercicios.length}</b><span>Rutinas</span></div><div class="stat"><b>${data.comidas}</b><span>Total comidas</span></div></div></div>
-   ${!isPrem?`<div class="card" style="padding:0;overflow:hidden"><div id="ad-dashboard" style="min-height:90px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#4ade80;background:#0f1a0f">Espacio publicitario</div></div>`:''}
-  `;
-  if(!isPrem && !document.getElementById('mt-ad')){
-    const s=document.createElement('script'); s.id='mt-ad'; s.innerHTML=`// MoneyTag zona 11736383 solo Dashboard`; document.body.appendChild(s);
-  }
- } else if(page==='alimentos'){
-  a.innerHTML=`<div class="card"><div class="card-title">Buscar alimentos</div><input id="searchAl" placeholder="Pollo, arroz..." oninput="window.filterAl()"><div id="listAl" style="margin-top:10px"></div></div><div class="card"><div class="card-title">Mis alimentos hoy (${data.alimentos.length})</div><div id="misAl">${data.alimentos.map((al,i)=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a2e1a"><span style="font-size:12px">${al.nombre} • ${al.cal} kcal • P${al.prot}</span><button onclick="window.delAl(${i})" style="background:none;border:none;color:#ef4444">✕</button></div>`).join('')||'<span style="color:#6b7280;font-size:12px">Sin alimentos</span>'}</div></div>`;
-  window.filterAl();
- } else if(page==='rutinas'){
-  a.innerHTML=`<div class="card"><div class="card-title">Ejercicios</div><div style="display:grid;gap:8px">${RUTINAS_DB.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#0f1a0f;padding:12px;border-radius:12px;border:1px solid #1a2e1a"><div><b style="font-size:13px">${r.nombre}</b><br><span style="font-size:10px;color:#9ca3af">${r.categoria}</span></div><button class="btn" style="width:auto;padding:8px 12px" onclick="window.addRut('${r.id}')">Añadir</button></div>`).join('')}</div></div><div class="card"><div class="card-title">Mis rutinas (${data.ejercicios.length})</div><div>${data.ejercicios.map((ex,i)=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a2e1a"><span style="font-size:12px">${ex.nombre}</span><button onclick="window.delRut(${i})" style="background:none;border:none;color:#ef4444">✕</button></div>`).join('')||'<span style="color:#6b7280;font-size:12px">Sin rutinas</span>'}</div></div>`;
- } else if(page==='stats'){
-  const peso=parseFloat(data.perfil.peso)||0; const altura=parseFloat(data.perfil.altura)||0; let imc='--'; if(peso>0&&altura>0){imc=(peso/((altura/100)*(altura/100))).toFixed(1);}
-  a.innerHTML=`<div class="card"><div class="card-title">Estadísticas</div><div class="grid2"><div class="stat"><b>${peso||'--'}</b><span>Peso kg</span></div><div class="stat"><b>${altura||'--'}</b><span>Altura cm</span></div><div class="stat"><b>${imc}</b><span>IMC</span></div><div class="stat"><b>${data.racha}</b><span>Racha</span></div></div><p style="font-size:10px;color:#6b7280;margin-top:12px">El IMC es orientativo y no sustituye consejo médico.</p></div><div class="card"><div class="card-title">Progreso</div><div class="grid2"><div class="stat"><b>${data.xp}</b><span>XP total</span></div><div class="stat"><b>${data.nivel}</b><span>Nivel</span></div><div class="stat"><b>${data.comidas}</b><span>Comidas totales</span></div><div class="stat"><b>${data.rutinas}</b><span>Rutinas totales</span></div></div></div>`;
- } else if(page==='logros'){
-  a.innerHTML=`<div class="card"><div class="card-title">Logros • ${data.logros.length}/${LOGROS.length}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${LOGROS.map(l=>{const d=data.logros.find(x=>x.id===l.id); return `<div class="logro ${d?'on':''}"><div style="font-size:26px">${l.icon}</div><div style="font-size:11px;font-weight:700;margin-top:4px">${l.n}</div><div style="font-size:9px;color:#9ca3af">${l.d}</div>${d?`<div style="font-size:8px;color:#4ade80;margin-top:4px">Desbloqueado</div>`:''}</div>`}).join('')}</div></div>`;
- } else if(page==='perfil'){
-  a.innerHTML=`<div class="card"><div class="card-title">Perfil - Guardado manual</div>
-   <label style="font-size:11px;color:#9ca3af">Nombre</label><input id="pn" value="${perfilEdit.nombre||''}" oninput="window.editPerfil('nombre',this.value)">
-   <label style="font-size:11px;color:#9ca3af;margin-top:8px;display:block">Peso kg</label><input id="pp" value="${perfilEdit.peso||''}" oninput="window.editPerfil('peso',this.value)">
-   <label style="font-size:11px;color:#9ca3af;margin-top:8px;display:block">Altura cm</label><input id="pa" value="${perfilEdit.altura||''}" oninput="window.editPerfil('altura',this.value)">
-   <label style="font-size:11px;color:#9ca3af;margin-top:8px;display:block">Objetivo</label><select id="po" onchange="window.editPerfil('objetivo',this.value)"><option value="volumen" ${perfilEdit.objetivo==='volumen'?'selected':''}>Volumen</option><option value="definicion" ${perfilEdit.objetivo==='definicion'?'selected':''}>Definición</option><option value="mantenimiento" ${perfilEdit.objetivo==='mantenimiento'?'selected':''}>Mantenimiento</option></select>
-   <div style="display:flex;gap:8px;margin-top:14px"><button class="btn" id="btnSave" onclick="window.savePerfil()" ${!hasPending?'disabled':''}>Guardar cambios</button><button class="btn btn-ghost" onclick="window.cancelPerfil()">Cancelar</button></div>
-   ${hasPending?'<p style="font-size:10px;color:#f59e0b;margin-top:8px">Tienes cambios sin guardar</p>':''}
-  </div>
-  <div class="card"><div class="card-title">Foto</div><input type="file" accept="image/*" onchange="window.changePhoto(event)"><div style="margin-top:10px">${data.photoURL?`<img src="${data.photoURL}" style="width:80px;height:80px;border-radius:12px;object-fit:cover">`:''}</div></div>
-  <div class="card"><div class="card-title">Cuenta</div><p style="font-size:12px;color:#9ca3af">${user.email}</p><button class="btn btn-ghost" style="margin-top:12px" onclick="window.logout()">Cerrar sesión</button></div>
-  `;
- }
-}
-
-window.go=p=>{ if(hasPending && page==='perfil' && p!=='perfil'){ if(!confirm('Tienes cambios sin guardar, ¿salir sin guardar?')) return; hasPending=false; perfilEdit={...data.perfil}; } page=p; render(); };
-window.sumarDia=sumarDia; window.quitarDia=quitarDia;
-window.filterAl=()=>{ const q=(document.getElementById('searchAl')?.value||'').toLowerCase(); const list=document.getElementById('listAl'); if(!list) return; const filtered=ALIMENTOS_DB.filter(a=>a.nombre.toLowerCase().includes(q)); list.innerHTML=filtered.map(a=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#0f1a0f;padding:10px;border-radius:12px;margin:6px 0;border:1px solid #1a2e1a"><div><b style="font-size:12px">${a.nombre}</b><br><span style="font-size:10px;color:#9ca3af">${a.cal} kcal • P:${a.prot} C:${a.carb} G:${a.grasa}</span></div><button class="btn" style="width:auto;padding:6px 10px" onclick="window.addAl(${a.id})">Añadir</button></div>`).join(''); };
-window.addAl=(id)=>{ const al=ALIMENTOS_DB.find(x=>x.id===id); data.alimentos.push({...al, fecha:new Date().toISOString()}); data.comidas++; addXP(10,'comida'); save(); render(); toast('Añadido'); };
-window.delAl=(i)=>{ data.alimentos.splice(i,1); save(); render(); };
-window.addRut=(id)=>{ const r=RUTINAS_DB.find(x=>x.id===id); data.ejercicios.push({...r, fecha:new Date().toISOString()}); data.rutinas++; addXP(25,'rutina'); save(); render(); toast('Rutina añadida'); };
-window.delRut=(i)=>{ data.ejercicios.splice(i,1); save(); render(); };
-window.editPerfil=(k,v)=>{ perfilEdit[k]=v; hasPending=JSON.stringify(perfilEdit)!==JSON.stringify(data.perfil); render(); };
-window.savePerfil=async()=>{ data.perfil={...perfilEdit}; await save(); hasPending=false; render(); toast('Guardado'); };
-window.cancelPerfil=()=>{ perfilEdit={...data.perfil}; hasPending=false; render(); };
-window.changePhoto=(e)=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ const img=new Image(); img.onload=()=>{ const canvas=document.createElement('canvas'); const max=240; let w=img.width,h=img.height; if(w>h){ if(w>max){h*=max/w; w=max;} } else { if(h>max){w*=max/h; h=max;} } canvas.width=w; canvas.height=h; canvas.getContext('2d').drawImage(img,0,0,w,h); data.photoURL=canvas.toDataURL('image/jpeg',0.6); save(); render(); }; img.src=r.result; }; r.readAsDataURL(f); };
-window.login=async()=>{ const e=document.getElementById('em').value.trim(); const p=document.getElementById('pw').value; if(!e||!p){toast('Completa campos'); return;} try{ const c=await signInWithEmailAndPassword(auth,e,p).catch(()=>createUserWithEmailAndPassword(auth,e,p)); user=c.user; }catch(err){toast('Error acceso');} };
-window.resetPass=async()=>{ const e=document.getElementById('em')?.value.trim()||prompt('Correo:'); if(!e) return; try{ await sendPasswordResetEmail(auth,e); toast('Correo enviado'); }catch(err){toast(err.message);} };
-window.logout=async()=>{ if(hasPending && !confirm('Cambios sin guardar, ¿salir?')) return; await signOut(auth); user=null; data=null; render(); };
-
-onAuthStateChanged(auth, async(u)=>{ if(u){ user=u; await load(u.uid); checkDia(); page='dashboard'; render(); } else { user=null; render(); } });
-</script>
+<script type="module" src="./js/app.js"></script>
 </body>
 </html>
